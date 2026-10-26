@@ -1,0 +1,779 @@
+ <!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment & Practical Tracker</title>
+
+<style>
+  :root {
+    --brand: #2563eb; --green: #22c55e; --purple: #7c3aed;
+    --bg: #f3f4f6; --card: #fff; --line: #e5e7eb; --muted: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: #111827; padding: 20px;
+  }
+  .container { max-width: 1100px; margin: auto; }
+
+  .login-screen {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, var(--brand), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  .login-box {
+    background: white; border-radius: 16px; padding: 32px 28px;
+    max-width: 420px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  .login-box h1 { margin: 0 0 8px; font-size: 1.4rem; }
+  .login-box .sub { margin: 0 0 22px; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+  .login-box input {
+    width: 100%; padding: 12px 14px; margin-bottom: 12px;
+    border: 1px solid var(--line); border-radius: 8px;
+    font: inherit; font-size: 1rem; background: #f9fafb;
+  }
+  .login-box input:focus { outline: 2px solid var(--brand); background: white; }
+  .login-box button {
+    width: 100%; padding: 12px; background: var(--brand); color: white;
+    border: none; border-radius: 8px; font: inherit; font-weight: 700;
+    cursor: pointer; font-size: 1rem;
+  }
+  .login-box button:disabled { opacity: .6; cursor: wait; }
+  .login-error {
+    color: #991b1b; background: #fee2e2; padding: 10px 12px;
+    border-radius: 8px; margin-top: 12px; font-size: .85rem;
+    display: none; line-height: 1.4;
+  }
+  .login-error.show { display: block; }
+
+  header {
+    background: linear-gradient(135deg, var(--brand), var(--purple));
+    color: white; padding: 20px 24px; border-radius: 16px; margin-bottom: 14px;
+  }
+  header h1 { margin: 0 0 10px; font-size: clamp(1.3rem, 4vw, 1.7rem); }
+  .breadcrumb {
+    display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: rgba(255,255,255,.18); padding: 8px 14px;
+    border-radius: 10px; font-size: .95rem; font-weight: 700; margin-bottom: 8px;
+  }
+  .breadcrumb .arrow { opacity: .7; }
+  .breadcrumb .subj-part { background: rgba(255,255,255,.28); padding: 2px 8px; border-radius: 6px; }
+  .breadcrumb .sem-part { background: rgba(255,255,255,.35); padding: 2px 8px; border-radius: 6px; }
+  header .meta { font-size: .88rem; opacity: .9; margin: 0; }
+
+  .selector-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px 14px; margin-bottom: 12px;
+  }
+  .selector-bar label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-weight: 700; font-size: .88rem; color: #374151;
+  }
+  .selector-bar select {
+    padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+    font: inherit; font-weight: 600; background: white; cursor: pointer; min-width: 130px;
+  }
+  .selector-bar .edit-btn { padding: 8px 10px; font-size: .82rem; border-radius: 8px; }
+  .selector-bar .spacer { flex: 1; }
+  .user-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #eff6ff; color: #1d4ed8; padding: 6px 12px;
+    border-radius: 20px; font-size: .85rem; font-weight: 700;
+  }
+
+  .progress-bar {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 16px;
+  }
+  .prog-item { display: inline-flex; align-items: center; gap: 10px; font-size: .9rem; }
+  .prog-label { font-weight: 700; color: #374151; }
+  .prog-value {
+    font-weight: 800; color: var(--brand); background: #eff6ff;
+    padding: 3px 10px; border-radius: 20px; font-size: .85rem;
+  }
+  .prog-value small { color: var(--muted); font-weight: 600; }
+
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px;
+  }
+  button {
+    padding: 10px 16px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--card); cursor: pointer; font: inherit; font-weight: 600;
+    white-space: nowrap;
+  }
+  button:hover { opacity: .9; }
+  button.primary { background: var(--brand); color: white; border-color: var(--brand); }
+  .status { margin-left: auto; font-size: .88rem; color: var(--muted); }
+
+  .table-wrap {
+    overflow-x: auto; background: var(--card);
+    border: 1px solid var(--line); border-radius: 14px;
+  }
+  table { width: 100%; min-width: 720px; border-collapse: collapse; }
+  th, td {
+    border-bottom: 1px solid var(--line); padding: 10px 12px;
+    text-align: left; vertical-align: middle;
+  }
+  th {
+    background: #f9fafb; position: sticky; top: 0; z-index: 1;
+    font-size: .85rem; white-space: nowrap;
+  }
+  tbody tr:nth-child(even) { background: #fbfdff; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .roll {
+    font-weight: 700; color: var(--brand); text-align: center;
+    white-space: nowrap; font-size: .9rem; width: 110px;
+  }
+  .unit-cell { display: flex; align-items: center; gap: 8px; }
+  input[type="date"] {
+    padding: 8px; border: 1px solid #d1d5db; border-radius: 8px;
+    font: inherit; background: white; min-width: 130px;
+  }
+  .submit-btn { cursor: pointer; user-select: none; }
+  .submit-btn input { position: absolute; opacity: 0; pointer-events: none; }
+  .submit-btn .face {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 52px; height: 32px; padding: 0 10px;
+    border-radius: 8px; font-weight: 700; font-size: .8rem;
+    border: 1px solid var(--line); background: white; color: var(--muted);
+    transition: all .15s; white-space: nowrap;
+  }
+  .submit-btn:hover .face { border-color: #cbd5e1; }
+  .submit-btn.is-checked .face {
+    background: var(--green); border-color: var(--green); color: white;
+    min-width: 34px; width: 34px; padding: 0; border-radius: 50%;
+    font-size: 1.05rem;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, .45);
+    animation: pop .22s ease-out;
+  }
+  @keyframes pop {
+    0% { transform: scale(.4); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .empty-cell {
+    text-align: center; padding: 40px 20px; color: var(--muted); line-height: 1.7;
+  }
+  .empty-cell b { color: #374151; }
+  .note { font-size: .85rem; color: var(--muted); margin-top: 14px; line-height: 1.7; }
+  .note b { color: #374151; }
+
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(255,255,255,.92);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; flex-direction: column; gap: 16px;
+  }
+  .spinner {
+    width: 48px; height: 48px; border: 4px solid #e5e7eb;
+    border-top-color: var(--brand); border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay p { color: var(--brand); font-weight: 700; }
+
+  @media print {
+    .toolbar, .selector-bar, header p, .note, .progress-bar,
+    .user-badge, .edit-btn, .loading-overlay { display: none; }
+    body { background: white; }
+    .table-wrap { border: none; }
+    input { border: none; }
+    header { background: white !important; color: black; padding: 0; }
+    header h1 { font-size: 1.2rem; }
+    .breadcrumb { background: #eee; color: black; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p id="loadingText">Loading…</p>
+</div>
+
+<div id="loginScreen" class="login-screen" style="display:none;">
+  <div class="login-box" id="loginBox"></div>
+</div>
+
+<div class="container" id="appContainer" style="display:none;">
+  <header>
+    <h1>📚 Assignment & Practical Tracker</h1>
+    <div class="breadcrumb" id="breadcrumb">Loading…</div>
+    <p class="meta" id="meta"></p>
+  </header>
+
+  <div class="selector-bar">
+    <label>🗓️ Semester: <select id="semesterSel"></select></label>
+    <button class="edit-btn" id="newSemesterBtn" title="New semester">➕ New</button>
+    <label>🏫 Class: <select id="classSel"></select></label>
+    <label>📖 Subject: <select id="subjectSel"></select></label>
+    <button class="edit-btn" id="editRollsBtn">✏️ Rolls</button>
+    <button class="edit-btn" id="editSubjectsBtn">📝 Subjects</button>
+    <span class="spacer"></span>
+    <span class="user-badge">👤 <span id="userName">…</span></span>
+    <button class="edit-btn" id="logoutBtn" title="Logout">🚪</button>
+  </div>
+
+  <div class="progress-bar" id="progress"></div>
+
+  <div class="toolbar">
+    <button id="exportBtn">⬇️ Export This Sheet</button>
+    <button id="exportSemBtn">📊 Export This Semester</button>
+    <button id="exportAllBtn">📦 Export All</button>
+    <span id="status" class="status">Ready</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Roll No.</th><th>Practical File</th><th>Assignment</th></tr>
+      </thead>
+      <tbody id="studentBody"></tbody>
+    </table>
+  </div>
+
+  <p class="note">
+    ✅ <b>Data Firebase (Google Cloud) me save hota hai</b> — browser clear karo, device badlo, kabhi nahi khoega.<br>
+    🗓️ <b>Har semester ka data ALAG</b> — purana kabhi delete nahi hota. Dropdown se wapas ja sakte ho.<br>
+    🏫 Class/Subject select karo → mark karo → 1-2 second me cloud me save.
+  </p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDZ4MrYn7mVyAgv9PHh7_vQDsksAZgW6Y",
+    authDomain: "assinment-tracker.firebaseapp.com",
+    projectId: "assinment-tracker",
+    storageBucket: "assinment-tracker.firebasestorage.app",
+    messagingSenderId: "600833937941",
+    appId: "1:600833937941:web:83a505c50b92e0050db41c"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  const BTECH_3A_ROLLS = [
+    'H250033','H250044','H250049','H250079','H250231','H250232','H250243','H250252',
+    'H250261','H250297','H250308','H250337','H250343','H250351','H250353','H250360',
+    'H250371','H250398','H250399','H250407','H250461','H250465','H250493','H250510',
+    'H250585','H250618','H250629','H250655','H250661','H250662','H250663','H250683',
+    'H250698','H250747','H250796','H250872','H250875','H250909','H250915','H250922',
+    'H250951','H250980','H250985','H2501177'
+  ];
+  const placeholderRolls = n => Array.from({ length: n }, (_, i) => String(i + 1).padStart(2, '0'));
+
+  const DEFAULT_CLASSES = [
+    { id:'btech1a', name:'BTech 1st A', group:'BTech', rolls:placeholderRolls(60),
+      subjects:['Maths-1','Physics','Chemistry','C Programming','English','Basic Electrical','Engineering Graphics'] },
+    { id:'btech1b', name:'BTech 1st B', group:'BTech', rolls:placeholderRolls(60),
+      subjects:['Maths-1','Physics','Chemistry','C Programming','English','Basic Electrical','Engineering Graphics'] },
+    { id:'btech2a', name:'BTech 2nd A', group:'BTech', rolls:placeholderRolls(60),
+      subjects:['Maths-2','Data Structure','Digital Electronics','OOP','Discrete Maths','OS','COA'] },
+    { id:'btech3a', name:'BTech 3rd A', group:'BTech', rolls:BTECH_3A_ROLLS,
+      subjects:['Digital Education','ML','Data Structure','Maths','Software Development','Digital Education (2)','C++'] },
+    { id:'bca1a', name:'BCA 1st A', group:'BCA', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'bca3a', name:'BCA 3rd A', group:'BCA', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'bca3b', name:'BCA 3rd B', group:'BCA', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'1sta', name:'1ST A', group:'Other', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'1stb', name:'1ST B', group:'Other', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] }
+  ];
+
+  const TASKS = [
+    { id: 'practical', label: 'Practical File' },
+    { id: 'assignment', label: 'Assignment' }
+  ];
+
+  let classes = [];
+  let semesters = [];
+  let currentSemester = '';
+  let currentUser = null;
+  let currentData = {};
+  let unsubscribeSheet = null;
+
+  function userToEmail(u) {
+    return u.toLowerCase().replace(/[^a-z0-9]/g, '') + '@tracker-h250.com';
+  }
+  function todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function formatDate(iso) {
+    if (!iso) return '';
+    const p = iso.split('-');
+    if (p.length !== 3) return iso;
+    const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${p[2]} ${m[Number(p[1])-1] || ''}`.trim();
+  }
+  function escapeAttr(v) {
+    return String(v).replaceAll('&','&amp;').replaceAll('"','&quot;')
+      .replaceAll("'",'&#39;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+  }
+  function setStatus(t) { document.getElementById('status').textContent = t; }
+  function showLoading(t) {
+    document.getElementById('loadingText').textContent = t || 'Loading…';
+    document.getElementById('loadingOverlay').style.display = 'flex';
+  }
+  function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+  }
+  function getClass() {
+    const id = document.getElementById('classSel').value;
+    return classes.find(c => c.id === id) || classes[0];
+  }
+  function getSubjectName() { return document.getElementById('subjectSel').value; }
+
+  function sheetDocId(semester, classId, subject) {
+    return semester + '__' + classId + '__' + encodeURIComponent(subject);
+  }
+
+  function defaultSemesterName() {
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    return month >= 7 ? `${year}-ODD` : `${year}-EVEN`;
+  }
+
+  function showLoginScreen() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+    hideLoading();
+
+    const box = document.getElementById('loginBox');
+    box.innerHTML = `
+      <h1>🔐 Teacher Login</h1>
+      <p class="sub">Apna username aur password daalein</p>
+      <input id="loginUser" type="text" placeholder="Username" autocomplete="username">
+      <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password">
+      <button id="loginBtn">Login</button>
+      <div class="login-error" id="loginError"></div>
+    `;
+
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('loginError');
+    const doLogin = async () => {
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      err.classList.remove('show');
+      if (!user || !pass) { err.textContent = 'दोनों fields भरें'; err.classList.add('show'); return; }
+      btn.disabled = true; btn.textContent = 'Logging in…';
+      try {
+        await auth.signInWithEmailAndPassword(userToEmail(user), pass);
+      } catch (e) {
+        let msg = 'Login failed';
+        if (e.code === 'auth/user-not-found') msg = 'Username नहीं मिला';
+        else if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') msg = 'गलत password';
+        else if (e.code === 'auth/too-many-requests') msg = 'बहुत बार try — 5 मिनट बाद';
+        else msg = e.message;
+        err.textContent = msg; err.classList.add('show');
+        btn.disabled = false; btn.textContent = 'Login';
+      }
+    };
+    btn.addEventListener('click', doLogin);
+    document.getElementById('loginPass').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+    document.getElementById('loginUser').focus();
+  }
+
+  async function loadSemesters() {
+    const ref = db.collection('config').doc('semesters');
+    const doc = await ref.get();
+    if (doc.exists && Array.isArray(doc.data().list) && doc.data().list.length) {
+      semesters = doc.data().list.slice();
+    } else {
+      semesters = [defaultSemesterName()];
+      await ref.set({ list: semesters });
+    }
+    const last = localStorage.getItem('tracker_last_sem');
+    currentSemester = semesters.includes(last) ? last : semesters[semesters.length - 1];
+  }
+
+  async function addSemester() {
+    const name = prompt(
+      'New semester ka naam (e.g. 2027-EVEN, 2027-ODD)\n\n' +
+      '⚠️ Purana data kabhi nahi mitega — alag se save rahega.',
+      defaultSemesterName()
+    );
+    if (name === null) return;
+    const clean = name.trim();
+    if (!clean) { alert('Khaali naam nahi'); return; }
+    if (semesters.includes(clean)) { alert('Ye semester pehle se hai'); return; }
+
+    semesters.push(clean);
+    try {
+      await db.collection('config').doc('semesters').set({ list: semesters });
+      currentSemester = clean;
+      localStorage.setItem('tracker_last_sem', clean);
+      renderSemesterOptions();
+      await loadSheetForCurrent();
+      setStatus(`New semester: ${clean}`);
+      alert(`✅ "${clean}" ready!\n\nPurana data 100% safe hai.`);
+    } catch (e) {
+      alert('Failed: ' + e.message);
+    }
+  }
+
+  function renderSemesterOptions() {
+    const sel = document.getElementById('semesterSel');
+    sel.innerHTML = semesters.map(s =>
+      `<option value="${escapeAttr(s)}">${escapeAttr(s)}</option>`
+    ).join('');
+    sel.value = currentSemester;
+  }
+
+  async function bootApp() {
+    showLoading('Loading…');
+    classes = DEFAULT_CLASSES.map(c => ({
+      ...c, rolls: c.rolls.slice(), subjects: (c.subjects || []).slice()
+    }));
+
+    try {
+      const snap = await db.collection('classConfig').get();
+      snap.forEach(doc => {
+        const c = classes.find(x => x.id === doc.id);
+        if (!c) return;
+        const d = doc.data();
+        if (Array.isArray(d.rolls) && d.rolls.length) c.rolls = d.rolls;
+        if (Array.isArray(d.subjects) && d.subjects.length) c.subjects = d.subjects;
+      });
+    } catch (e) { console.warn(e); }
+
+    try { await loadSemesters(); }
+    catch (e) { semesters = [defaultSemesterName()]; currentSemester = semesters[0]; }
+
+    renderSemesterOptions();
+    renderClassOptions();
+    renderSubjectOptions();
+    await loadSheetForCurrent();
+    hideLoading();
+  }
+
+  async function loadSheetForCurrent() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    if (unsubscribeSheet) { unsubscribeSheet(); unsubscribeSheet = null; }
+
+    if (!subj || !currentSemester) {
+      currentData = {};
+      render();
+      return;
+    }
+
+    const docId = sheetDocId(currentSemester, cls.id, subj);
+    setStatus('Loading…');
+
+    unsubscribeSheet = db.collection('sheets').doc(docId).onSnapshot(
+      doc => {
+        currentData = doc.exists ? (doc.data().data || {}) : {};
+        render();
+        setStatus('Synced');
+      },
+      err => { console.error(err); setStatus('⚠️ Sync error'); }
+    );
+  }
+
+  async function saveSheet() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    if (!subj || !currentSemester) return;
+
+    const docId = sheetDocId(currentSemester, cls.id, subj);
+    setStatus('Saving…');
+    try {
+      await db.collection('sheets').doc(docId).set({
+        semester: currentSemester,
+        classId: cls.id,
+        classLabel: cls.name,
+        subject: subj,
+        data: currentData,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: currentUser ? currentUser.email : null
+      }, { merge: true });
+      setStatus('✅ Saved');
+    } catch (e) { console.error(e); setStatus('❌ Save failed'); }
+  }
+
+  function renderClassOptions() {
+    const sel = document.getElementById('classSel');
+    const prev = sel.value;
+    const groups = {};
+    classes.forEach(c => { (groups[c.group || 'Other'] = groups[c.group || 'Other'] || []).push(c); });
+    let html = '';
+    Object.keys(groups).forEach(g => {
+      html += `<optgroup label="${escapeAttr(g)}">`;
+      groups[g].forEach(c => html += `<option value="${escapeAttr(c.id)}">${escapeAttr(c.name)}</option>`);
+      html += `</optgroup>`;
+    });
+    sel.innerHTML = html;
+    if (classes.some(c => c.id === prev)) sel.value = prev;
+  }
+
+  function renderSubjectOptions() {
+    const cls = getClass();
+    const sel = document.getElementById('subjectSel');
+    const prev = sel.value;
+    const subs = cls.subjects || [];
+    if (!subs.length) { sel.innerHTML = '<option value="">(no subjects)</option>'; return; }
+    sel.innerHTML = subs.map(s => `<option value="${escapeAttr(s)}">${escapeAttr(s)}</option>`).join('');
+    sel.value = subs.includes(prev) ? prev : subs[0];
+  }
+
+  function renderBreadcrumb() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    document.getElementById('breadcrumb').innerHTML =
+      `<span class="sem-part">🗓️ ${escapeAttr(currentSemester)}</span>
+       <span class="arrow">→</span>
+       <span class="cls-part">🏫 ${escapeAttr(cls.name)}</span>
+       <span class="arrow">→</span>
+       <span class="subj-part">📖 ${escapeAttr(subj || 'No subject')}</span>`;
+    document.getElementById('meta').textContent =
+      `${cls.rolls.length} students • Today: ${formatDate(todayStr())}`;
+  }
+
+  function updateProgress(cls) {
+    const total = cls.rolls.length;
+    document.getElementById('progress').innerHTML = TASKS.map(t => {
+      const count = cls.rolls.filter(r => currentData[r] && currentData[r][t.id]).length;
+      const pct = total ? Math.round(count / total * 100) : 0;
+      return `<div class="prog-item">
+        <span class="prog-label">${t.label}</span>
+        <span class="prog-value">${count}/${total} <small>(${pct}%)</small></span>
+      </div>`;
+    }).join('');
+  }
+
+  function render() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    const tbody = document.getElementById('studentBody');
+    renderBreadcrumb();
+
+    if (!subj) {
+      tbody.innerHTML = `<tr><td colspan="3" class="empty-cell">
+        <b>Is class me koi subject nahi.</b><br>📝 Subjects dabakar add karein.
+      </td></tr>`;
+      document.getElementById('progress').innerHTML = '';
+      return;
+    }
+    if (!cls.rolls.length) {
+      tbody.innerHTML = `<tr><td colspan="3" class="empty-cell">
+        <b>Is class me koi roll number nahi.</b><br>✏️ Rolls dabakar add karein.
+      </td></tr>`;
+      document.getElementById('progress').innerHTML = '';
+      return;
+    }
+
+    tbody.innerHTML = cls.rolls.map(roll => {
+      const row = currentData[roll] || {};
+      const cells = TASKS.map(t => {
+        const v = row[t.id] || '';
+        const ck = !!v;
+        return `<td><div class="unit-cell">
+          <label class="submit-btn ${ck ? 'is-checked' : ''}"
+                 title="${ck ? 'Submitted: ' + formatDate(v) : 'Mark today'}">
+            <input type="checkbox" data-roll="${escapeAttr(roll)}"
+                   data-task="${t.id}" ${ck ? 'checked' : ''}>
+            <span class="face">${ck ? '✓' : 'Mark'}</span>
+          </label>
+          <input type="date" data-roll="${escapeAttr(roll)}"
+                 data-task="${t.id}" value="${escapeAttr(v)}">
+        </div></td>`;
+      }).join('');
+      return `<tr><td class="roll">${escapeAttr(roll)}</td>${cells}</tr>`;
+    }).join('');
+
+    updateProgress(cls);
+  }
+
+  document.getElementById('studentBody').addEventListener('change', (e) => {
+    const input = e.target;
+    const roll = input.dataset.roll;
+    const task = input.dataset.task;
+    if (!roll || !task) return;
+
+    if (!currentData[roll]) currentData[roll] = {};
+
+    if (input.type === 'checkbox') {
+      if (input.checked) {
+        if (!currentData[roll][task]) currentData[roll][task] = todayStr();
+      } else {
+        currentData[roll][task] = '';
+      }
+    } else if (input.type === 'date') {
+      currentData[roll][task] = input.value;
+    }
+
+    render();
+    saveSheet();
+  });
+
+  document.getElementById('semesterSel').addEventListener('change', async (e) => {
+    currentSemester = e.target.value;
+    localStorage.setItem('tracker_last_sem', currentSemester);
+    await loadSheetForCurrent();
+    setStatus(`Semester: ${currentSemester}`);
+  });
+
+  document.getElementById('newSemesterBtn').addEventListener('click', addSemester);
+
+  document.getElementById('classSel').addEventListener('change', () => {
+    renderSubjectOptions();
+    loadSheetForCurrent();
+    setStatus('Switched class');
+  });
+
+  document.getElementById('subjectSel').addEventListener('change', () => {
+    loadSheetForCurrent();
+    setStatus('Switched subject');
+  });
+
+  document.getElementById('editRollsBtn').addEventListener('click', async () => {
+    const cls = getClass();
+    const next = prompt(`Roll numbers for "${cls.name}" (comma-separated):`, cls.rolls.join(', '));
+    if (next === null) return;
+    const rolls = next.split(',').map(r => r.trim()).filter(Boolean);
+    if (!rolls.length) { alert('Empty'); return; }
+    cls.rolls = rolls;
+    try {
+      await db.collection('classConfig').doc(cls.id).set({
+        rolls, subjects: cls.subjects,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      render();
+      setStatus('Rolls saved');
+    } catch (e) { alert('Save failed: ' + e.message); }
+  });
+
+  document.getElementById('editSubjectsBtn').addEventListener('click', async () => {
+    const cls = getClass();
+    const next = prompt(`Subjects for "${cls.name}" (comma-separated):`, (cls.subjects || []).join(', '));
+    if (next === null) return;
+    const names = next.split(',').map(s => s.trim()).filter(Boolean);
+    if (!names.length) { alert('Empty'); return; }
+    const seen = new Set(), dups = new Set();
+    names.forEach(n => { if (seen.has(n)) dups.add(n); seen.add(n); });
+    if (dups.size) { alert('Duplicate: ' + [...dups].join(', ')); return; }
+    cls.subjects = names;
+    try {
+      await db.collection('classConfig').doc(cls.id).set({
+        rolls: cls.rolls, subjects: names,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      renderSubjectOptions();
+      await loadSheetForCurrent();
+      setStatus('Subjects saved');
+    } catch (e) { alert('Save failed: ' + e.message); }
+  });
+
+  const csvEscape = c => `"${String(c).replaceAll('"','""')}"`;
+  function downloadCSV(rows, filename) {
+    const csv = rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const cls = getClass(), subj = getSubjectName();
+    if (!subj) { alert('No subject'); return; }
+    const rows = [['Semester','Class','Subject','Roll No.', ...TASKS.map(t => t.label + ' Date')]];
+    cls.rolls.forEach(r => {
+      const row = currentData[r] || {};
+      rows.push([currentSemester, cls.name, subj, r, ...TASKS.map(t => row[t.id] || '')]);
+    });
+    const safe = s => String(s).replace(/[^a-zA-Z0-9_-]+/g, '_');
+    downloadCSV(rows, `sheet_${safe(currentSemester)}_${safe(cls.name)}_${safe(subj)}.csv`);
+    setStatus('Exported');
+  });
+
+  document.getElementById('exportSemBtn').addEventListener('click', async () => {
+    showLoading(`Exporting ${currentSemester}…`);
+    try {
+      const snap = await db.collection('sheets').where('semester', '==', currentSemester).get();
+      const rows = [['Semester','Class','Subject','Roll No.', ...TASKS.map(t => t.label + ' Date')]];
+      let count = 0;
+      snap.forEach(doc => {
+        const d = doc.data();
+        const data = d.data || {};
+        const cls = classes.find(c => c.id === d.classId);
+        if (!cls) return;
+        cls.rolls.forEach(r => {
+          const row = data[r] || {};
+          if (TASKS.some(t => row[t.id])) {
+            rows.push([d.semester, d.classLabel || cls.name, d.subject, r, ...TASKS.map(t => row[t.id] || '')]);
+            count++;
+          }
+        });
+      });
+      if (!count) { alert('Koi data nahi'); hideLoading(); return; }
+      downloadCSV(rows, `semester_${currentSemester.replace(/[^a-zA-Z0-9_-]/g,'_')}.csv`);
+      setStatus(`Exported ${count} rows`);
+    } catch (e) { alert('Export failed: ' + e.message); }
+    finally { hideLoading(); }
+  });
+
+  document.getElementById('exportAllBtn').addEventListener('click', async () => {
+    showLoading('Exporting everything…');
+    try {
+      const snap = await db.collection('sheets').get();
+      const rows = [['Semester','Class','Subject','Roll No.', ...TASKS.map(t => t.label + ' Date')]];
+      let count = 0;
+      snap.forEach(doc => {
+        const d = doc.data();
+        const data = d.data || {};
+        const cls = classes.find(c => c.id === d.classId);
+        if (!cls) return;
+        cls.rolls.forEach(r => {
+          const row = data[r] || {};
+          if (TASKS.some(t => row[t.id])) {
+            rows.push([d.semester || '?', d.classLabel || cls.name, d.subject, r, ...TASKS.map(t => row[t.id] || '')]);
+            count++;
+          }
+        });
+      });
+      if (!count) { alert('Koi data nahi'); hideLoading(); return; }
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadCSV(rows, `ALL_BACKUP_${stamp}.csv`);
+      setStatus(`Exported ${count} rows`);
+    } catch (e) { alert('Export failed: ' + e.message); }
+    finally { hideLoading(); }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    if (!confirm('Logout?')) return;
+    await auth.signOut();
+  });
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = user;
+      const username = user.email.replace('@tracker-h250.com', '');
+      document.getElementById('userName').textContent = username;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appContainer').style.display = '';
+      bootApp();
+    } else {
+      currentUser = null;
+      if (unsubscribeSheet) { unsubscribeSheet(); unsubscribeSheet = null; }
+      showLoginScreen();
+    }
+  });
+</script>
+</body>
+</html>
