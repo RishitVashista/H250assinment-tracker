@@ -304,9 +304,9 @@
   let currentData = {};
   let unsubscribeSheet = null;
 
-  function userToEmail(u) {
-    return u.toLowerCase().replace(/[^a-z0-9]/g, '') + '@tracker-h250.com';
-  }
+   function userToEmail(u) {
+  return u.toLowerCase().replace(/[^a-z0-9]/g, '') + '@cpuh.com';
+}
   function todayStr() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -763,8 +763,8 @@
   auth.onAuthStateChanged(user => {
     if (user) {
       currentUser = user;
-      const username = user.email.replace('@tracker-h250.com', '');
-      document.getElementById('userName').textContent = username;
+       const username = user.email.replace('@cpuh.com', '');
+      documen`.getElementById('userName').textContent = username;
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appContainer').style.display = '';
       bootApp();
