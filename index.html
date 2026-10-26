@@ -63,7 +63,6 @@
     0%, 100% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.1); opacity: .7; }
   }
-
   .login-card {
     position: relative;
     background: white;
@@ -78,7 +77,6 @@
     from { opacity: 0; transform: translateY(20px) scale(.96); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
-
   .login-hero {
     background: linear-gradient(135deg, var(--brand), var(--purple));
     padding: 32px 28px 26px;
@@ -117,9 +115,7 @@
     font-weight: 500;
     line-height: 1.5;
   }
-
   .login-form { padding: 26px 28px 28px; }
-
   .field { margin-bottom: 16px; }
   .field label {
     display: block;
@@ -148,7 +144,6 @@
     box-shadow: 0 0 0 4px rgba(37,99,235,.12);
   }
   .field input::placeholder { color: #9ca3af; }
-
   .eye-btn {
     position: absolute;
     right: 4px; top: 50%;
@@ -164,7 +159,6 @@
   }
   .eye-btn:hover { background: #f3f4f6; color: var(--brand); }
   .eye-btn svg { width: 20px; height: 20px; }
-
   .login-submit {
     width: 100%;
     padding: 14px;
@@ -188,7 +182,6 @@
   }
   .login-submit:active:not(:disabled) { transform: translateY(0); }
   .login-submit:disabled { opacity: .6; cursor: wait; }
-
   .login-error {
     color: #991b1b;
     background: #fef2f2;
@@ -209,7 +202,6 @@
     25% { transform: translateX(-6px); }
     75% { transform: translateX(6px); }
   }
-
   .login-footer {
     text-align: center;
     margin-top: 18px;
@@ -635,77 +627,373 @@
     to { transform: translateX(0); opacity: 1; }
   }
 
+  /* ================= HIDE MOBILE ON DESKTOP ================= */
+  .mobile-user, .mobile-bottom-bar { display: none; }
+
+  /* ================= TABLET ================= */
   @media (max-width: 1024px) {
     .selector-bar select { min-width: 110px; }
     .prog-item { min-width: 200px; }
   }
 
+  /* ================= MOBILE ================= */
   @media (max-width: 768px) {
-    body { padding: 12px; }
-    header { padding: 16px 18px; border-radius: 14px; margin-bottom: 12px; }
-    header h1 { font-size: 1.1rem; margin-bottom: 8px; }
-    .breadcrumb { font-size: .8rem; padding: 6px 10px; gap: 6px; margin-bottom: 6px; }
-    .breadcrumb .sem-part, .breadcrumb .subj-part { padding: 2px 7px; font-size: .75rem; }
-    header .meta { font-size: .75rem; }
+    body {
+      padding: 0;
+      padding-bottom: calc(84px + env(safe-area-inset-bottom));
+      background: #f1f5f9;
+    }
 
-    .selector-bar { padding: 10px; gap: 8px; border-radius: 12px; margin-bottom: 10px; }
-    .selector-bar > .select-wrap:first-child { flex: 1 1 calc(100% - 80px); min-width: 0; }
-    #newSemesterBtn { flex: 0 0 auto; padding: 8px 12px; }
-    .selector-bar > .select-wrap:not(:first-child) { flex: 1 1 100%; min-width: 0; }
-    .select-wrap select { flex: 1; width: 100%; min-width: 0; min-height: 40px; font-size: .88rem; }
-    #editRollsBtn, #editSubjectsBtn { flex: 1 1 calc(50% - 4px); justify-content: center; min-height: 40px; }
-    .selector-bar .spacer { display: none; }
-    .user-badge { flex: 1 1 auto; min-width: 0; justify-content: center; padding: 6px 10px; font-size: .78rem; }
-    .btn-icon { width: 40px !important; height: 40px !important; }
+    /* Sticky compact header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-radius: 0;
+      margin: 0;
+      padding: 14px 16px 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      min-height: 64px;
+    }
+    header h1 {
+      font-size: .92rem;
+      margin: 0 0 6px;
+      padding-right: 90px;
+      line-height: 1.25;
+    }
+    .breadcrumb {
+      font-size: .72rem;
+      padding: 5px 10px;
+      gap: 5px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin-bottom: 0;
+    }
+    .breadcrumb .arrow { font-size: .68rem; }
+    .breadcrumb .sem-part,
+    .breadcrumb .subj-part {
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: .7rem;
+    }
+    header .meta { display: none; }
 
-    .progress-bar { padding: 10px; gap: 8px; border-radius: 12px; margin-bottom: 12px; }
-    .prog-item { min-width: 0; flex: 1 1 100%; padding: 10px 12px; }
-    .prog-label { font-size: .78rem; }
-    .prog-count { font-size: .82rem; }
+    /* Mobile user badge in header */
+    .mobile-user {
+      display: flex;
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      align-items: center;
+      gap: 6px;
+      z-index: 2;
+    }
+    .mobile-user .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255,255,255,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      font-weight: 800;
+      color: white;
+    }
+    .mobile-user .logout-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      border: 1.5px solid rgba(255,255,255,.25);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: pointer;
+    }
+    .mobile-user .logout-btn:active { background: rgba(255,255,255,.3); }
 
-    .toolbar { gap: 8px; margin-bottom: 12px; }
-    .toolbar .btn, .toolbar .btn-primary { flex: 1 1 calc(50% - 4px); justify-content: center; font-size: .8rem; padding: 10px 12px; }
-    .status { flex: 1 1 100%; margin-left: 0; justify-content: center; font-size: .78rem; }
+    /* Sticky horizontal filter bar */
+    .selector-bar {
+      position: sticky;
+      top: 64px;
+      z-index: 99;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 10px 12px;
+      margin: 0 0 8px;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      gap: 8px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .selector-bar::-webkit-scrollbar { display: none; }
+    .selector-bar > * { flex-shrink: 0; }
+    .selector-bar .spacer,
+    .selector-bar .user-badge,
+    .selector-bar #logoutBtn,
+    .selector-bar #editRollsBtn,
+    .selector-bar #editSubjectsBtn { display: none; }
+    .selector-bar select {
+      min-height: 34px;
+      font-size: .8rem;
+      min-width: 0;
+      padding: 6px 26px 6px 8px;
+      background-position: right 8px center;
+    }
+    .select-wrap {
+      font-size: .76rem;
+      gap: 5px;
+      font-weight: 600;
+    }
+    .selector-bar #newSemesterBtn {
+      padding: 6px 12px;
+      font-size: .76rem;
+      min-height: 34px;
+    }
 
-    .table-wrap { background: transparent; border: none; box-shadow: none; overflow: visible; border-radius: 0; }
+    /* Compact progress */
+    .progress-bar {
+      margin: 8px 12px;
+      padding: 10px;
+      border-radius: 12px;
+      gap: 8px;
+      background: white;
+    }
+    .prog-item {
+      padding: 8px 12px;
+      min-width: 0;
+      flex: 1 1 100%;
+      border-radius: 8px;
+    }
+    .prog-label { font-size: .75rem; margin-bottom: 5px; }
+    .prog-count { font-size: .78rem; }
+    .prog-bar-outer { height: 6px; }
+
+    /* Cards */
+    .table-wrap {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0 12px;
+      overflow: visible;
+      border-radius: 0;
+    }
     table, thead, tbody, tr, td { display: block; width: 100%; }
     table { min-width: 0; }
     thead { display: none; }
-    tbody tr { background: white; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow-sm); overflow: hidden; }
-    tbody tr:nth-child(even) { background: white; }
-    tbody tr:hover { background: white; box-shadow: var(--shadow-md); }
-    td { border: none; border-bottom: 1px solid var(--line-soft); padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    td:last-child { border-bottom: none; }
-    td::before { content: attr(data-label); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #6b7280; flex-shrink: 0; }
-    td.roll { background: linear-gradient(135deg, var(--brand-light), #f0f9ff); color: var(--brand); font-size: 1rem; text-align: left; width: auto; justify-content: flex-start; padding: 14px 12px; font-weight: 800; }
+
+    tbody tr {
+      background: white;
+      border: none;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      overflow: hidden;
+      padding: 0;
+    }
+    tbody tr:hover { background: white; }
+
+    td.roll {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 14px 18px;
+      justify-content: space-between;
+      border: none;
+      border-radius: 0;
+      font-family: "SF Mono", Menlo, monospace;
+      letter-spacing: .04em;
+      position: relative;
+    }
     td.roll::before { display: none; }
-    .unit-cell { flex: 1; justify-content: flex-end; gap: 8px; }
-    input[type="date"] { min-width: 0; flex: 1; max-width: 150px; font-size: 16px; padding: 8px 10px; min-height: 40px; }
-    .submit-btn .face { min-width: 56px; height: 40px; font-size: .82rem; }
-    .submit-btn.is-checked .face { min-width: 40px; width: 40px; height: 40px; }
-    .empty-cell { padding: 30px 16px; font-size: .85rem; background: white; border-radius: 12px; border: 1px solid var(--line); }
-    .note { font-size: .78rem; padding: 12px 14px; margin-top: 12px; }
-    .toast-container { top: max(12px, env(safe-area-inset-top)); left: 12px; right: 12px; max-width: none; }
-    .toast { padding: 12px 14px; font-size: .82rem; }
+    td.roll::after {
+      content: 'STUDENT';
+      font-size: .6rem;
+      font-family: system-ui, sans-serif;
+      font-weight: 800;
+      letter-spacing: .12em;
+      opacity: .7;
+      text-transform: uppercase;
+    }
+
+    td:not(.roll) {
+      border: none;
+      border-bottom: 1px solid #f3f4f6;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      background: white;
+    }
+    td:last-child { border-bottom: none; }
+
+    td::before {
+      content: attr(data-label);
+      font-size: .68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+
+    .unit-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .submit-btn .face {
+      min-width: 90px;
+      height: 44px;
+      font-size: .82rem;
+      padding: 0 16px;
+      border-radius: 10px;
+    }
+    .submit-btn.is-checked .face {
+      min-width: 44px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+    }
+
+    input[type="date"] {
+      flex: 1;
+      min-width: 0;
+      height: 44px;
+      font-size: 16px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border-width: 1.5px;
+    }
+
+    .empty-cell {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 20px;
+      font-size: .85rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+
+    .note {
+      margin: 8px 12px 0;
+      padding: 14px 16px;
+      font-size: .76rem;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    }
+
+    .toolbar { display: none; }
+
+    /* Bottom action bar */
+    .mobile-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      display: flex;
+      gap: 6px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,.08);
+      align-items: stretch;
+    }
+    .mob-btn {
+      flex: 1;
+      height: 52px;
+      border: none;
+      border-radius: 12px;
+      background: #f3f4f6;
+      color: #374151;
+      font-weight: 700;
+      font-size: .68rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 4px;
+      transition: all .15s;
+      font-family: inherit;
+    }
+    .mob-btn:active {
+      background: #e5e7eb;
+      transform: scale(.96);
+    }
+    .mob-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    .mob-btn.primary {
+      background: var(--brand);
+      color: white;
+      flex: 1.3;
+    }
+    .mob-btn.primary:active {
+      background: var(--brand-dark);
+    }
+    .mob-btn .mob-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+    .mob-btn .mob-status-dot.saving {
+      background: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+    .mob-btn .mob-status-dot.error {
+      background: #dc2626;
+    }
+
+    .toast-container {
+      top: auto;
+      bottom: calc(84px + env(safe-area-inset-bottom));
+      left: 12px;
+      right: 12px;
+      max-width: none;
+    }
+    .toast {
+      padding: 12px 14px;
+      font-size: .82rem;
+      border-radius: 10px;
+    }
+
+    .loading-overlay p { font-size: .85rem; }
+    .spinner { width: 40px; height: 40px; border-width: 3.5px; }
   }
 
   @media (max-width: 400px) {
-    body { padding: 8px; }
-    .login-screen { padding: 12px; }
-    .login-hero { padding: 24px 22px 20px; }
-    .login-hero h1 { font-size: 1.15rem; }
-    .login-hero .sub { font-size: .82rem; }
-    .login-hero .logo { width: 46px; height: 46px; font-size: 1.4rem; }
-    .login-form { padding: 22px 22px 24px; }
-    .field input { padding: 14px; padding-right: 44px; font-size: 16px; }
-    .login-submit { padding: 14px; font-size: .95rem; }
-    header h1 { font-size: 1rem; }
-    header { padding: 14px 16px; }
-    td { flex-direction: column; align-items: stretch; gap: 8px; }
-    td::before { margin-bottom: 2px; }
-    .unit-cell { justify-content: flex-start; width: 100%; }
-    input[type="date"] { flex: 1; max-width: none; min-width: 0; }
-    .btn { font-size: .78rem; padding: 8px 10px; }
+    header h1 { font-size: .85rem; }
+    .breadcrumb { font-size: .68rem; padding: 4px 8px; }
+    td.roll { font-size: 1rem; padding: 12px 14px; }
+    td:not(.roll) { padding: 12px 14px; }
+    .submit-btn .face { min-width: 80px; height: 40px; font-size: .78rem; }
+    .submit-btn.is-checked .face { min-width: 40px; width: 40px; height: 40px; }
+    input[type="date"] { height: 40px; }
+    .mob-btn { height: 46px; font-size: .64rem; }
+    .mob-btn svg { width: 16px; height: 16px; }
+    body { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
   }
 
   @media (max-height: 500px) and (orientation: landscape) {
@@ -721,11 +1009,12 @@
 
   @media print {
     .toolbar, .selector-bar, header p, .note, .progress-bar,
-    .user-badge, .btn, .loading-overlay, .toast-container { display: none; }
+    .user-badge, .btn, .loading-overlay, .toast-container,
+    .mobile-user, .mobile-bottom-bar { display: none; }
     body { background: white; padding: 0; }
     .table-wrap { border: none; box-shadow: none; }
     input { border: none; background: transparent; }
-    header { background: white !important; color: black; padding: 0; box-shadow: none; }
+    header { background: white !important; color: black; padding: 0; box-shadow: none; position: static; }
     header h1 { font-size: 1.2rem; }
     .breadcrumb { background: #eee; color: black; }
     table { min-width: 100%; }
@@ -786,6 +1075,16 @@
     <h1>📚 Assignment & Practical Tracker</h1>
     <div class="breadcrumb" id="breadcrumb">Loading…</div>
     <p class="meta" id="meta"></p>
+    <div class="mobile-user">
+      <span class="avatar" id="mobileAvatar">?</span>
+      <button class="logout-btn" id="mobileLogoutBtn" title="Sign out">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+    </div>
   </header>
 
   <div class="selector-bar">
@@ -850,6 +1149,35 @@
     <b>ℹ️ Data is stored in Firebase (Google Cloud)</b>
     Everything syncs across devices in real-time. Each semester's data is stored separately — nothing is ever deleted.
   </p>
+</div>
+
+<div class="mobile-bottom-bar" id="mobileBottomBar">
+  <button class="mob-btn" id="mobRollsBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+    <span>Rolls</span>
+  </button>
+  <button class="mob-btn" id="mobSubjectsBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    <span>Subjects</span>
+  </button>
+  <button class="mob-btn primary" id="mobExportBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    <span>Export</span>
+  </button>
+  <button class="mob-btn" id="mobStatusBtn" style="pointer-events:none;">
+    <span class="mob-status-dot" id="mobStatusDot"></span>
+    <span id="mobStatusText">Ready</span>
+  </button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1266,7 +1594,6 @@
     updateProgress(cls);
   }
 
-  // ===== DATA CHANGE HANDLER (with safety tracking) =====
   function handleDataChange(e) {
     const input = e.target;
     const roll = input.dataset.roll;
@@ -1295,7 +1622,6 @@
     if (e.target.type === 'date') handleDataChange(e);
   });
 
-  // Warn before closing if saves pending
   window.addEventListener('beforeunload', (e) => {
     if (pendingSaves > 0) {
       e.preventDefault();
@@ -1454,6 +1780,7 @@
       const username = user.email.replace('@cpuh.com', '');
       document.getElementById('userName').textContent = username;
       document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+      document.getElementById('mobileAvatar').textContent = username.charAt(0).toUpperCase();
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appContainer').style.display = '';
       bootApp();
@@ -1465,6 +1792,50 @@
   });
 
   attachLoginHandlers();
+
+  // ===== MOBILE WIRING =====
+  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+  if (mobileLogoutBtn) {
+    mobileLogoutBtn.addEventListener('click', async () => {
+      if (!confirm('Sign out of your account?')) return;
+      await auth.signOut();
+    });
+  }
+
+  const mobExportBtn = document.getElementById('mobExportBtn');
+  if (mobExportBtn) {
+    mobExportBtn.addEventListener('click', () => {
+      document.getElementById('exportBtn').click();
+    });
+  }
+  const mobRollsBtn = document.getElementById('mobRollsBtn');
+  if (mobRollsBtn) {
+    mobRollsBtn.addEventListener('click', () => {
+      document.getElementById('editRollsBtn').click();
+    });
+  }
+  const mobSubjectsBtn = document.getElementById('mobSubjectsBtn');
+  if (mobSubjectsBtn) {
+    mobSubjectsBtn.addEventListener('click', () => {
+      document.getElementById('editSubjectsBtn').click();
+    });
+  }
+
+  // Sync mobile status dot
+  const statusEl = document.getElementById('status');
+  const mobStatusDot = document.getElementById('mobStatusDot');
+  const mobStatusText = document.getElementById('mobStatusText');
+  if (statusEl && mobStatusDot) {
+    const observer = new MutationObserver(() => {
+      const cls = statusEl.className;
+      mobStatusDot.className = 'mob-status-dot' +
+        (cls.includes('saving') ? ' saving' : '') +
+        (cls.includes('error') ? ' error' : '');
+      const text = document.getElementById('statusText').textContent;
+      mobStatusText.textContent = text.length > 12 ? text.slice(0, 12) + '…' : text;
+    });
+    observer.observe(statusEl, { attributes: true, childList: true, subtree: true });
+  }
 </script>
 </body>
 </html>
