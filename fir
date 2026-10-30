@@ -1,2 +1,1904 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Assignment & Practical Tracker</title>
 
-https://console.firebase.google.com/project/assinment-tracker/authentication/users
+<style>
+  :root {
+    --brand: #2563eb;
+    --brand-dark: #1e40af;
+    --brand-light: #dbeafe;
+    --green: #22c55e;
+    --green-dark: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --red: #dc2626;
+    --amber: #f59e0b;
+    --bg: #f3f4f6;
+    --bg-mobile: #eef2f7;
+    --card: #ffffff;
+    --line: #e5e7eb;
+    --line-soft: #f3f4f6;
+    --text: #111827;
+    --text-soft: #374151;
+    --muted: #6b7280;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,.15);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); padding: 20px;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+  button, select, input, label {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    font-family: inherit;
+  }
+
+  /* ==================== LOGIN SCREEN ==================== */
+  .login-screen {
+    position: fixed; inset: 0;
+    display: flex; align-items: flex-start; justify-content: center;
+    z-index: 9999;
+    padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 50%, #1e40af 100%);
+  }
+  .login-screen::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(124,58,237,.35), transparent 45%),
+      radial-gradient(circle at 80% 80%, rgba(37,99,235,.35), transparent 45%);
+    animation: bgShift 15s ease infinite;
+    pointer-events: none;
+  }
+  @keyframes bgShift {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: .7; }
+  }
+  .login-card {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    width: 100%; max-width: 440px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.4);
+    overflow: hidden;
+    animation: cardIn .5s cubic-bezier(.16,1,.3,1);
+    margin: auto 0;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .login-hero {
+    background: linear-gradient(135deg, var(--brand), var(--purple));
+    padding: 32px 28px 26px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-hero::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 260px; height: 260px;
+    background: rgba(255,255,255,.08);
+    border-radius: 50%;
+  }
+  .login-hero .logo {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,.2);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 14px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.2);
+  }
+  .login-hero h1 {
+    margin: 0 0 6px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+  }
+  .login-hero .sub {
+    margin: 0;
+    font-size: .87rem;
+    opacity: .85;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .login-form { padding: 26px 28px 28px; }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+    letter-spacing: .01em;
+  }
+  .field-wrap { position: relative; }
+  .field input {
+    width: 100%;
+    padding: 13px 14px;
+    padding-right: 44px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 1rem;
+    background: #f9fafb;
+    transition: all .15s;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--brand);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+  }
+  .field input::placeholder { color: #9ca3af; }
+  .eye-btn {
+    position: absolute;
+    right: 4px; top: 50%;
+    transform: translateY(-50%);
+    width: 40px; height: 40px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    transition: all .15s;
+  }
+  .eye-btn:hover { background: var(--line-soft); color: var(--brand); }
+  .eye-btn svg { width: 20px; height: 20px; }
+  .login-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--brand);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all .15s;
+    margin-top: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px;
+  }
+  .login-submit:hover:not(:disabled) {
+    background: var(--brand-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(37,99,235,.35);
+  }
+  .login-submit:active:not(:disabled) { transform: translateY(0); }
+  .login-submit:disabled { opacity: .6; cursor: wait; }
+  .login-error {
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-top: 14px;
+    font-size: .84rem;
+    display: none;
+    line-height: 1.5;
+    font-weight: 500;
+    animation: shake .35s;
+  }
+  .login-error.show { display: flex; gap: 8px; align-items: flex-start; }
+  .login-error svg { flex-shrink: 0; margin-top: 1px; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .login-footer {
+    text-align: center;
+    margin-top: 18px;
+    font-size: .78rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ==================== APP LAYOUT ==================== */
+  .container { max-width: 1180px; margin: auto; }
+
+  header {
+    background: linear-gradient(135deg, var(--brand), var(--purple));
+    color: white;
+    padding: 22px 26px;
+    border-radius: 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    top: -60%; right: -10%;
+    width: 280px; height: 280px;
+    background: rgba(255,255,255,.08);
+    border-radius: 50%;
+  }
+  header > * { position: relative; z-index: 1; }
+  header h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.15rem, 3.5vw, 1.6rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.3;
+  }
+  .breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: rgba(255,255,255,.15);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: .88rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    backdrop-filter: blur(8px);
+  }
+  .breadcrumb .arrow { opacity: .6; font-size: .8rem; }
+  .breadcrumb .sem-part { background: rgba(255,255,255,.3); padding: 3px 9px; border-radius: 6px; }
+  .breadcrumb .subj-part { background: rgba(255,255,255,.3); padding: 3px 9px; border-radius: 6px; }
+  header .meta { font-size: .85rem; opacity: .9; margin: 0; font-weight: 500; }
+
+  /* Mobile user badge (hidden on desktop) */
+  .mobile-user { display: none; }
+
+  /* ==================== SELECTOR BAR ==================== */
+  .selector-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .select-wrap {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: .82rem; color: var(--text-soft);
+    letter-spacing: .01em;
+  }
+  .selector-bar select {
+    padding: 8px 30px 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .85rem;
+    background: white;
+    cursor: pointer;
+    min-width: 120px;
+    transition: all .15s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    min-height: 38px;
+  }
+  .selector-bar select:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  }
+  .btn {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .82rem;
+    transition: all .15s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-soft);
+    min-height: 38px;
+  }
+  .btn:hover {
+    background: #f9fafb;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+  }
+  .btn:active { transform: translateY(0); }
+  .btn.btn-add {
+    background: #ecfdf5;
+    color: #065f46;
+    border-color: #a7f3d0;
+  }
+  .btn.btn-add:hover { background: #d1fae5; }
+  .btn.btn-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+  .btn.btn-danger:hover { background: #fee2e2; }
+  .btn.btn-icon {
+    width: 38px; height: 38px;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .selector-bar .spacer { flex: 1; }
+  .user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 700;
+    border: 1px solid #bfdbfe;
+    min-height: 34px;
+  }
+  .user-badge .avatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  /* ==================== PROGRESS BAR ==================== */
+  .progress-bar {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .prog-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 14px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid var(--line-soft);
+  }
+  .prog-info { flex: 1; min-width: 0; }
+  .prog-label {
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: .82rem;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .prog-count {
+    font-weight: 800;
+    color: var(--brand);
+    font-size: .88rem;
+    white-space: nowrap;
+  }
+  .prog-count small { color: var(--muted); font-weight: 600; font-size: .75rem; }
+  .prog-bar-outer {
+    height: 8px;
+    background: var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .prog-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand), var(--purple));
+    border-radius: 4px;
+    transition: width .5s cubic-bezier(.16,1,.3,1);
+  }
+
+  /* ==================== TOOLBAR ==================== */
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    align-items: center; margin-bottom: 16px;
+  }
+  .toolbar .btn-primary {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+    padding: 10px 16px;
+    font-size: .85rem;
+  }
+  .toolbar .btn-primary:hover {
+    background: var(--brand-dark);
+    border-color: var(--brand-dark);
+  }
+  .status {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .82rem;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 8px 14px;
+    background: #f9fafb;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    transition: all .2s;
+    min-height: 34px;
+  }
+  .status .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .status.saving .dot { background: var(--amber); animation: pulse 1s infinite; }
+  .status.saved .dot { background: var(--green); }
+  .status.error .dot { background: var(--red); }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .4; transform: scale(1.3); }
+  }
+
+  /* ==================== TABLE (Desktop) ==================== */
+  .table-wrap {
+    overflow-x: auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  table { width: 100%; min-width: 720px; border-collapse: collapse; }
+  th, td {
+    border-bottom: 1px solid var(--line);
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: middle;
+  }
+  th {
+    background: #f9fafb;
+    position: sticky; top: 0; z-index: 1;
+    font-size: .78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  tbody tr { transition: background .15s; }
+  tbody tr:nth-child(even) { background: #fbfdff; }
+  tbody tr:hover { background: #f0f7ff; }
+  tbody tr:last-child td { border-bottom: none; }
+  .roll {
+    font-weight: 800;
+    color: var(--brand);
+    text-align: center;
+    white-space: nowrap;
+    font-size: .88rem;
+    width: 110px;
+    font-family: "SF Mono", Menlo, monospace;
+    letter-spacing: .02em;
+  }
+  .unit-cell { display: flex; align-items: center; gap: 10px; }
+  input[type="date"] {
+    padding: 8px 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    font-size: .85rem;
+    background: white;
+    min-width: 140px;
+    transition: all .15s;
+  }
+  input[type="date"]:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  }
+  .submit-btn { cursor: pointer; user-select: none; position: relative; }
+  .submit-btn input { position: absolute; opacity: 0; pointer-events: none; }
+  .submit-btn .face {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 60px; height: 34px; padding: 0 14px;
+    border-radius: 8px; font-weight: 700; font-size: .78rem;
+    border: 1.5px solid var(--line);
+    background: white;
+    color: var(--muted);
+    transition: all .2s cubic-bezier(.16,1,.3,1);
+    white-space: nowrap;
+    letter-spacing: .02em;
+  }
+  .submit-btn:hover .face {
+    border-color: var(--brand);
+    color: var(--brand);
+    background: #eff6ff;
+  }
+  .submit-btn.is-checked .face {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+    min-width: 36px; width: 36px; padding: 0;
+    border-radius: 50%;
+    font-size: 1.05rem;
+    box-shadow: 0 2px 10px rgba(34, 197, 94, .4);
+    animation: pop .28s cubic-bezier(.16,1.5,.5,1);
+  }
+  .submit-btn.is-checked:hover .face {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+  }
+  @keyframes pop {
+    0% { transform: scale(.3); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .empty-cell {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: .9rem;
+  }
+  .empty-cell b { color: var(--text-soft); display: block; margin-bottom: 6px; font-size: 1rem; }
+  .note {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.8;
+    padding: 14px 18px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid var(--line-soft);
+  }
+  .note b { color: var(--text-soft); }
+
+  /* ==================== LOADING ==================== */
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; flex-direction: column; gap: 16px;
+  }
+  .spinner {
+    width: 46px; height: 46px;
+    border: 4px solid var(--line);
+    border-top-color: var(--brand);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay p {
+    color: var(--brand);
+    font-weight: 700;
+    font-size: .92rem;
+    letter-spacing: .02em;
+  }
+
+  /* ==================== TOAST ==================== */
+  .toast-container {
+    position: fixed;
+    top: max(20px, env(safe-area-inset-top));
+    right: max(20px, env(safe-area-inset-right));
+    z-index: 10000;
+    display: flex; flex-direction: column; gap: 10px;
+    pointer-events: none;
+    max-width: 380px;
+  }
+  .toast {
+    background: white;
+    padding: 14px 18px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--text);
+    border-left: 4px solid var(--brand);
+    display: flex; align-items: center; gap: 10px;
+    animation: toastIn .35s cubic-bezier(.16,1,.3,1);
+    pointer-events: auto;
+  }
+  .toast.success { border-left-color: var(--green); }
+  .toast.error { border-left-color: var(--red); }
+  .toast.warn { border-left-color: var(--amber); }
+  @keyframes toastIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ==================== MOBILE BOTTOM BAR (hidden on desktop) ==================== */
+  .mobile-bottom-bar { display: none; }
+
+  /* ==================== TABLET ==================== */
+  @media (max-width: 1024px) {
+    .selector-bar select { min-width: 110px; }
+    .prog-item { min-width: 200px; }
+  }
+
+  /* ==================== MOBILE ==================== */
+  @media (max-width: 768px) {
+    body {
+      padding: 0;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+      background: var(--bg-mobile);
+    }
+
+    .container {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    /* ---- Sticky Header ---- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-radius: 0;
+      margin: 0;
+      padding: 14px 16px 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+      min-height: 76px;
+    }
+    header::after { display: none; }
+    header h1 {
+      font-size: 1rem;
+      margin: 0 0 8px;
+      padding-right: 84px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+    .breadcrumb {
+      font-size: .72rem;
+      padding: 5px 10px;
+      gap: 5px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin-bottom: 0;
+    }
+    .breadcrumb .arrow { font-size: .65rem; }
+    .breadcrumb .sem-part,
+    .breadcrumb .subj-part {
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: .68rem;
+    }
+    .breadcrumb .cls-part { font-size: .72rem; }
+    header .meta { display: none; }
+
+    /* ---- Mobile user (top-right) ---- */
+    .mobile-user {
+      display: flex;
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+    .mobile-user .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255,255,255,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      font-weight: 800;
+      color: white;
+    }
+    .mobile-user .logout-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      border: 1.5px solid rgba(255,255,255,.25);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .mobile-user .logout-btn:active { background: rgba(255,255,255,.3); }
+
+    /* ---- Compact Filter Bar ---- */
+    .selector-bar {
+      position: sticky;
+      top: 76px;
+      z-index: 99;
+      padding: 10px 12px;
+      margin: 0 0 10px;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      background: white;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .selector-bar .spacer,
+    .selector-bar .user-badge,
+    .selector-bar #logoutBtn,
+    .selector-bar #editRollsBtn,
+    .selector-bar #editSubjectsBtn { display: none; }
+    .select-wrap {
+      font-size: .75rem;
+      gap: 5px;
+      font-weight: 700;
+      color: var(--text-soft);
+    }
+    .selector-bar select {
+      min-height: 36px;
+      font-size: .82rem;
+      padding: 7px 26px 7px 10px;
+      background-position: right 8px center;
+      min-width: 0;
+      flex: 1;
+    }
+    .selector-bar > .select-wrap {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .selector-bar > .select-wrap:nth-of-type(1) { flex: 1 1 calc(100% - 78px); }
+    .selector-bar > .select-wrap:nth-of-type(2),
+    .selector-bar > .select-wrap:nth-of-type(3) {
+      flex: 1 1 calc(50% - 4px);
+    }
+    #newSemesterBtn {
+      flex: 0 0 auto;
+      min-height: 36px;
+      font-size: .75rem;
+      padding: 7px 12px;
+    }
+
+    /* ---- Compact Progress ---- */
+    .progress-bar {
+      margin: 0 12px 10px;
+      padding: 10px;
+      border-radius: 12px;
+      gap: 8px;
+      background: white;
+      border: 1px solid var(--line);
+    }
+    .prog-item {
+      padding: 8px 12px;
+      min-width: 0;
+      flex: 1 1 100%;
+      border-radius: 8px;
+      background: #f9fafb;
+    }
+    .prog-label { font-size: .72rem; margin-bottom: 5px; }
+    .prog-count { font-size: .76rem; }
+    .prog-bar-outer { height: 6px; }
+
+    /* ---- Hide desktop toolbar ---- */
+    .toolbar { display: none; }
+
+    /* ---- CARD LAYOUT ---- */
+    .table-wrap {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0 12px;
+      overflow: visible;
+      border-radius: 0;
+    }
+    table, thead, tbody, tr, td {
+      display: block;
+      width: 100%;
+    }
+    table { min-width: 0; }
+    thead { display: none; }
+
+    tbody tr {
+      background: white;
+      border: none;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+      overflow: hidden;
+    }
+
+    /* Roll header with gradient */
+    td.roll {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--purple) 100%);
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: "SF Mono", Menlo, monospace;
+      letter-spacing: .04em;
+    }
+    td.roll::before { display: none; }
+    td.roll::after {
+      content: 'STUDENT';
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: .58rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      opacity: .75;
+      text-transform: uppercase;
+    }
+
+    /* Task sections in card */
+    td:not(.roll) {
+      border: none;
+      border-bottom: 1px solid var(--line-soft);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      background: white;
+    }
+    td:not(.roll):last-child { border-bottom: none; }
+
+    td:not(.roll)::before {
+      content: attr(data-label);
+      font-size: .68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .unit-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    /* Big touch targets */
+    .submit-btn .face {
+      min-width: 84px;
+      height: 44px;
+      font-size: .82rem;
+      padding: 0 16px;
+      border-radius: 10px;
+    }
+    .submit-btn.is-checked .face {
+      min-width: 44px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 1.15rem;
+    }
+    input[type="date"] {
+      flex: 1;
+      min-width: 0;
+      height: 44px;
+      font-size: 16px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border-width: 1.5px;
+    }
+
+    .empty-cell {
+      background: white;
+      border-radius: 14px;
+      padding: 36px 20px;
+      font-size: .85rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+      border: 1px solid var(--line);
+    }
+
+    .note {
+      margin: 12px 12px 0;
+      padding: 12px 14px;
+      font-size: .74rem;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04);
+      border: 1px solid var(--line);
+    }
+
+    /* ---- Fixed Bottom Action Bar ---- */
+    .mobile-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: white;
+      border-top: 1px solid var(--line);
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      display: flex;
+      gap: 6px;
+      box-shadow: 0 -4px 24px rgba(0,0,0,.08);
+      align-items: stretch;
+      height: calc(76px + env(safe-area-inset-bottom));
+    }
+    .mob-btn {
+      flex: 1;
+      height: 58px;
+      border: none;
+      border-radius: 12px;
+      background: #f3f4f6;
+      color: var(--text-soft);
+      font-weight: 700;
+      font-size: .68rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px;
+      transition: all .15s;
+    }
+    .mob-btn:active {
+      background: var(--line);
+      transform: scale(.96);
+    }
+    .mob-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    .mob-btn.primary {
+      background: var(--brand);
+      color: white;
+      flex: 1.15;
+    }
+    .mob-btn.primary:active {
+      background: var(--brand-dark);
+    }
+    .mob-btn .mob-status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+    .mob-btn .mob-status-dot.saving {
+      background: var(--amber);
+      animation: pulse 1s infinite;
+    }
+    .mob-btn .mob-status-dot.error {
+      background: var(--red);
+    }
+
+    /* Toast above bottom bar */
+    .toast-container {
+      top: auto;
+      bottom: calc(88px + env(safe-area-inset-bottom));
+      left: 12px;
+      right: 12px;
+      max-width: none;
+    }
+    .toast {
+      padding: 12px 14px;
+      font-size: .82rem;
+      border-radius: 10px;
+      animation: toastInMobile .35s cubic-bezier(.16,1,.3,1);
+    }
+    @keyframes toastInMobile {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .loading-overlay p { font-size: .85rem; }
+    .spinner { width: 40px; height: 40px; border-width: 3.5px; }
+  }
+
+  /* ==================== SMALL PHONES ==================== */
+  @media (max-width: 400px) {
+    header { padding: 12px 14px 10px; min-height: 72px; }
+    header h1 { font-size: .92rem; padding-right: 78px; }
+    .breadcrumb { font-size: .68rem; padding: 4px 8px; }
+    .breadcrumb .sem-part, .breadcrumb .subj-part { padding: 2px 6px; font-size: .64rem; }
+    .mobile-user .avatar, .mobile-user .logout-btn { width: 30px; height: 30px; }
+
+    .selector-bar { top: 72px; padding: 8px 10px; gap: 6px; }
+    .selector-bar select { min-height: 34px; font-size: .78rem; }
+
+    td.roll { font-size: .95rem; padding: 11px 14px; }
+    td:not(.roll) { padding: 12px 14px; }
+    .submit-btn .face { min-width: 78px; height: 42px; font-size: .78rem; }
+    .submit-btn.is-checked .face { min-width: 42px; width: 42px; height: 42px; }
+    input[type="date"] { height: 42px; }
+
+    .mobile-bottom-bar { height: calc(70px + env(safe-area-inset-bottom)); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+    .mob-btn { height: 54px; font-size: .62rem; }
+    .mob-btn svg { width: 18px; height: 18px; }
+    body { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+  }
+
+  /* ==================== LANDSCAPE MOBILE ==================== */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .login-screen { padding: 10px; }
+    .login-hero { padding: 16px 22px; }
+    .login-hero .logo { display: none; }
+    .login-hero h1 { font-size: 1.05rem; margin-bottom: 2px; }
+    .login-hero .sub { font-size: .78rem; }
+    .login-form { padding: 16px 22px; }
+    .field { margin-bottom: 10px; }
+    .login-footer { margin-top: 10px; }
+    header { position: static; }
+    .selector-bar { position: static; }
+  }
+
+  /* ==================== PRINT ==================== */
+  @media print {
+    .toolbar, .selector-bar, header p, .note, .progress-bar,
+    .user-badge, .btn, .loading-overlay, .toast-container,
+    .mobile-user, .mobile-bottom-bar { display: none !important; }
+    body { background: white; padding: 0; }
+    .table-wrap { border: none; box-shadow: none; }
+    input { border: none; background: transparent; }
+    header { background: white !important; color: black; padding: 0; box-shadow: none; position: static; }
+    header h1 { font-size: 1.2rem; }
+    .breadcrumb { background: #eee; color: black; }
+    table { min-width: 100%; }
+    tbody tr { page-break-inside: avoid; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p id="loadingText">Loading…</p>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ==================== LOGIN SCREEN ==================== -->
+<div id="loginScreen" class="login-screen" style="display:none;">
+  <div class="login-card">
+    <div class="login-hero">
+      <div class="logo">📚</div>
+      <h1>Assignment Tracker</h1>
+      <p class="sub">Sign in to manage assignments and practical file submissions</p>
+    </div>
+    <div class="login-form">
+      <div class="field">
+        <label for="loginUser">Username</label>
+        <div class="field-wrap">
+          <input id="loginUser" type="text" placeholder="Enter your username" autocomplete="username" autofocus>
+        </div>
+      </div>
+      <div class="field">
+        <label for="loginPass">Password</label>
+        <div class="field-wrap">
+          <input id="loginPass" type="password" placeholder="Enter your password" autocomplete="current-password">
+          <button type="button" class="eye-btn" id="togglePass" title="Show password">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button class="login-submit" id="loginBtn">
+        <span>Sign In</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+      <div class="login-error" id="loginError"></div>
+      <div class="login-footer">Contact your administrator if you don't have access.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div class="container" id="appContainer" style="display:none;">
+  <header>
+    <h1>📚 Assignment & Practical Tracker</h1>
+    <div class="breadcrumb" id="breadcrumb">Loading…</div>
+    <p class="meta" id="meta"></p>
+    <div class="mobile-user">
+      <span class="avatar" id="mobileAvatar">?</span>
+      <button class="logout-btn" id="mobileLogoutBtn" title="Sign out">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="selector-bar">
+    <div class="select-wrap">
+      🗓️
+      <select id="semesterSel" title="Select semester"></select>
+    </div>
+    <button class="btn btn-add" id="newSemesterBtn" title="Create new semester">➕ New</button>
+    <div class="select-wrap">
+      🏫
+      <select id="classSel" title="Select class"></select>
+    </div>
+    <div class="select-wrap">
+      📖
+      <select id="subjectSel" title="Select subject"></select>
+    </div>
+    <button class="btn" id="editRollsBtn" title="Edit roll numbers">✏️ Rolls</button>
+    <button class="btn" id="editSubjectsBtn" title="Edit subjects">📝 Subjects</button>
+    <span class="spacer"></span>
+    <span class="user-badge">
+      <span class="avatar" id="userAvatar">?</span>
+      <span id="userName">…</span>
+    </span>
+    <button class="btn btn-icon btn-danger" id="logoutBtn" title="Sign out">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="progress-bar" id="progress"></div>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" id="exportBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Export Sheet
+    </button>
+    <button class="btn" id="exportSemBtn">📊 Export Semester</button>
+    <button class="btn" id="exportAllBtn">📦 Export All</button>
+    <span id="status" class="status">
+      <span class="dot"></span>
+      <span id="statusText">Ready</span>
+    </span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Roll No.</th><th>Practical File</th><th>Assignment</th></tr>
+      </thead>
+      <tbody id="studentBody"></tbody>
+    </table>
+  </div>
+
+  <p class="note">
+    <b>ℹ️ Data is stored in Firebase (Google Cloud)</b>
+    Everything syncs across devices in real-time. Each semester's data is stored separately — nothing is ever deleted.
+  </p>
+</div>
+
+<!-- ==================== MOBILE BOTTOM BAR ==================== -->
+<div class="mobile-bottom-bar" id="mobileBottomBar">
+  <button class="mob-btn" id="mobRollsBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+    <span>Rolls</span>
+  </button>
+  <button class="mob-btn" id="mobSubjectsBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    <span>Subjects</span>
+  </button>
+  <button class="mob-btn primary" id="mobExportBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    <span>Export</span>
+  </button>
+  <button class="mob-btn" id="mobStatusBtn" style="pointer-events:none;">
+    <span class="mob-status-dot" id="mobStatusDot"></span>
+    <span id="mobStatusText">Ready</span>
+  </button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+  // ============ FIREBASE CONFIG ============
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDZ4MrYn7mVyAgv9PHh7_vQDsksAZgW6Y",
+    authDomain: "assinment-tracker.firebaseapp.com",
+    projectId: "assinment-tracker",
+    storageBucket: "assinment-tracker.firebasestorage.app",
+    messagingSenderId: "600833937941",
+    appId: "1:600833937941:web:83a505c50b92e0050db41c"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // ============ DATA CONFIG ============
+  const BTECH_3A_ROLLS = [
+    'H250033','H250044','H250049','H250079','H250231','H250232','H250243','H250252',
+    'H250261','H250297','H250308','H250337','H250343','H250351','H250353','H250360',
+    'H250371','H250398','H250399','H250407','H250461','H250465','H250493','H250510',
+    'H250585','H250618','H250629','H250655','H250661','H250662','H250663','H250683',
+    'H250698','H250747','H250796','H250872','H250875','H250909','H250915','H250922',
+    'H250951','H250980','H250985','H2501177'
+  ];
+  const placeholderRolls = n => Array.from({ length: n }, (_, i) => String(i + 1).padStart(2, '0'));
+
+  const DEFAULT_CLASSES = [
+    { id:'btech1a', name:'BTech 1st A', group:'BTech', rolls:placeholderRolls(60),
+      subjects:['Maths-1','Physics','Chemistry','C Programming','English','Basic Electrical','Engineering Graphics'] },
+    { id:'btech1b', name:'BTech 1st B', group:'BTech', rolls:placeholderRolls(60),
+      subjects:['Maths-1','Physics','Chemistry','C Programming','English','Basic Electrical','Engineering Graphics'] },
+    { id:'btech2a', name:'BTech 2nd A', group:'BTech', rolls:placeholderRolls(60),
+      subjects:['Maths-2','Data Structure','Digital Electronics','OOP','Discrete Maths','OS','COA'] },
+    { id:'btech3a', name:'BTech 3rd A', group:'BTech', rolls:BTECH_3A_ROLLS,
+      subjects:['Digital Education','ML','Data Structure','Maths','Software Development','Digital Education (2)','C++'] },
+    { id:'bca1a', name:'BCA 1st A', group:'BCA', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'bca3a', name:'BCA 3rd A', group:'BCA', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'bca3b', name:'BCA 3rd B', group:'BCA', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'1sta', name:'1ST A', group:'Other', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] },
+    { id:'1stb', name:'1ST B', group:'Other', rolls:placeholderRolls(60),
+      subjects:['Subject 1','Subject 2','Subject 3'] }
+  ];
+
+  const TASKS = [
+    { id: 'practical', label: 'Practical File' },
+    { id: 'assignment', label: 'Assignment' }
+  ];
+
+  // ============ STATE ============
+  let classes = [];
+  let semesters = [];
+  let currentSemester = '';
+  let currentUser = null;
+  let currentData = {};
+  let unsubscribeSheet = null;
+  let pendingSaves = 0;
+
+  // ============ HELPERS ============
+  function userToEmail(u) {
+    return u.toLowerCase().replace(/[^a-z0-9]/g, '') + '@cpuh.com';
+  }
+  function todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function formatDate(iso) {
+    if (!iso) return '';
+    const p = iso.split('-');
+    if (p.length !== 3) return iso;
+    const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${p[2]} ${m[Number(p[1])-1] || ''}`.trim();
+  }
+  function escapeAttr(v) {
+    return String(v).replaceAll('&','&amp;').replaceAll('"','&quot;')
+      .replaceAll("'",'&#39;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+  }
+  function setStatus(t, type = '') {
+    document.getElementById('statusText').textContent = t;
+    document.getElementById('status').className = 'status ' + type;
+  }
+  function showLoading(t) {
+    document.getElementById('loadingText').textContent = t || 'Loading…';
+    document.getElementById('loadingOverlay').style.display = 'flex';
+  }
+  function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+  }
+  function getClass() {
+    const id = document.getElementById('classSel').value;
+    return classes.find(c => c.id === id) || classes[0];
+  }
+  function getSubjectName() { return document.getElementById('subjectSel').value; }
+
+  function sheetDocId(semester, classId, subject) {
+    return semester + '__' + classId + '__' + encodeURIComponent(subject);
+  }
+
+  function defaultSemesterName() {
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    return month >= 7 ? `${year}-ODD` : `${year}-EVEN`;
+  }
+
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠️';
+    toast.innerHTML = `<span>${icon}</span> <span>${escapeAttr(message)}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.transition = 'all .3s';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(400px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 2800);
+  }
+
+  // ============ LOGIN ============
+  function showLoginScreen() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+    hideLoading();
+    const userInput = document.getElementById('loginUser');
+    const passInput = document.getElementById('loginPass');
+    const err = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    if (userInput) userInput.value = '';
+    if (passInput) passInput.value = '';
+    if (err) { err.classList.remove('show'); err.textContent = ''; }
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Sign In <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'; }
+    setTimeout(() => userInput && userInput.focus(), 150);
+  }
+
+  function attachLoginHandlers() {
+    const togglePass = document.getElementById('togglePass');
+    const passInput = document.getElementById('loginPass');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (togglePass) {
+      togglePass.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        togglePass.title = isPass ? 'Hide password' : 'Show password';
+        eyeIcon.innerHTML = isPass
+          ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`
+          : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+      });
+    }
+
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('loginError');
+
+    const doLogin = async () => {
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      err.classList.remove('show');
+      err.textContent = '';
+      if (!user || !pass) {
+        err.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> <span>Please fill in both fields</span>`;
+        err.classList.add('show');
+        return;
+      }
+      btn.disabled = true;
+      btn.innerHTML = '<span>Signing in…</span>';
+      try {
+        await auth.signInWithEmailAndPassword(userToEmail(user), pass);
+      } catch (e) {
+        let msg = 'Login failed. Please try again.';
+        if (e.code === 'auth/user-not-found') msg = 'Username not found. Please check with your administrator.';
+        else if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') msg = 'Incorrect password. Please try again.';
+        else if (e.code === 'auth/too-many-requests') msg = 'Too many attempts. Please wait 5 minutes.';
+        else if (e.code === 'auth/network-request-failed') msg = 'Network error. Please check your connection.';
+        err.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> <span>${escapeAttr(msg)}</span>`;
+        err.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+      }
+    };
+    btn.addEventListener('click', doLogin);
+    document.getElementById('loginPass').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+    document.getElementById('loginUser').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('loginPass').focus();
+    });
+  }
+
+  // ============ SEMESTERS ============
+  async function loadSemesters() {
+    const ref = db.collection('config').doc('semesters');
+    const doc = await ref.get();
+    if (doc.exists && Array.isArray(doc.data().list) && doc.data().list.length) {
+      semesters = doc.data().list.slice();
+    } else {
+      semesters = [defaultSemesterName()];
+      await ref.set({ list: semesters });
+    }
+    const last = localStorage.getItem('tracker_last_sem');
+    currentSemester = semesters.includes(last) ? last : semesters[semesters.length - 1];
+  }
+
+  async function addSemester() {
+    const name = prompt(
+      'New semester name (e.g. 2027-EVEN, 2027-ODD)\n\n⚠️ Previous data is never deleted — it stays safe.',
+      defaultSemesterName()
+    );
+    if (name === null) return;
+    const clean = name.trim();
+    if (!clean) { showToast('Please enter a semester name', 'error'); return; }
+    if (semesters.includes(clean)) { showToast('This semester already exists', 'warn'); return; }
+    semesters.push(clean);
+    try {
+      await db.collection('config').doc('semesters').set({ list: semesters });
+      currentSemester = clean;
+      localStorage.setItem('tracker_last_sem', clean);
+      renderSemesterOptions();
+      await loadSheetForCurrent();
+      setStatus('New semester created', 'saved');
+      showToast(`"${clean}" created. Previous data is safe.`, 'success');
+    } catch (e) {
+      showToast('Failed: ' + e.message, 'error');
+    }
+  }
+
+  function renderSemesterOptions() {
+    const sel = document.getElementById('semesterSel');
+    sel.innerHTML = semesters.map(s =>
+      `<option value="${escapeAttr(s)}">${escapeAttr(s)}</option>`
+    ).join('');
+    sel.value = currentSemester;
+  }
+
+  // ============ BOOT ============
+  async function bootApp() {
+    showLoading('Loading your data…');
+    classes = DEFAULT_CLASSES.map(c => ({
+      ...c, rolls: c.rolls.slice(), subjects: (c.subjects || []).slice()
+    }));
+    try {
+      const snap = await db.collection('classConfig').get();
+      snap.forEach(doc => {
+        const c = classes.find(x => x.id === doc.id);
+        if (!c) return;
+        const d = doc.data();
+        if (Array.isArray(d.rolls) && d.rolls.length) c.rolls = d.rolls;
+        if (Array.isArray(d.subjects) && d.subjects.length) c.subjects = d.subjects;
+      });
+    } catch (e) { console.warn(e); }
+    try { await loadSemesters(); }
+    catch (e) { semesters = [defaultSemesterName()]; currentSemester = semesters[0]; }
+    renderSemesterOptions();
+    renderClassOptions();
+    renderSubjectOptions();
+    await loadSheetForCurrent();
+    hideLoading();
+  }
+
+  // ============ SHEET ============
+  async function loadSheetForCurrent() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    if (unsubscribeSheet) { unsubscribeSheet(); unsubscribeSheet = null; }
+    if (!subj || !currentSemester) {
+      currentData = {};
+      render();
+      return;
+    }
+    const docId = sheetDocId(currentSemester, cls.id, subj);
+    setStatus('Loading…');
+    unsubscribeSheet = db.collection('sheets').doc(docId).onSnapshot(
+      doc => {
+        currentData = doc.exists ? (doc.data().data || {}) : {};
+        render();
+        setStatus('Synced', 'saved');
+      },
+      err => {
+        console.error(err);
+        setStatus('Sync error', 'error');
+      }
+    );
+  }
+
+  async function saveSheet() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    if (!subj || !currentSemester) return Promise.resolve();
+    const docId = sheetDocId(currentSemester, cls.id, subj);
+    try {
+      await db.collection('sheets').doc(docId).set({
+        semester: currentSemester,
+        classId: cls.id,
+        classLabel: cls.name,
+        subject: subj,
+        data: currentData,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: currentUser ? currentUser.email : null
+      }, { merge: true });
+      setStatus('Saved', 'saved');
+    } catch (e) {
+      console.error(e);
+      setStatus('Save failed', 'error');
+      showToast('Could not save. Please check your connection.', 'error');
+    }
+  }
+
+  // ============ RENDER ============
+  function renderClassOptions() {
+    const sel = document.getElementById('classSel');
+    const prev = sel.value;
+    const groups = {};
+    classes.forEach(c => { (groups[c.group || 'Other'] = groups[c.group || 'Other'] || []).push(c); });
+    let html = '';
+    Object.keys(groups).forEach(g => {
+      html += `<optgroup label="${escapeAttr(g)}">`;
+      groups[g].forEach(c => html += `<option value="${escapeAttr(c.id)}">${escapeAttr(c.name)}</option>`);
+      html += `</optgroup>`;
+    });
+    sel.innerHTML = html;
+    if (classes.some(c => c.id === prev)) sel.value = prev;
+  }
+
+  function renderSubjectOptions() {
+    const cls = getClass();
+    const sel = document.getElementById('subjectSel');
+    const prev = sel.value;
+    const subs = cls.subjects || [];
+    if (!subs.length) { sel.innerHTML = '<option value="">(no subjects)</option>'; return; }
+    sel.innerHTML = subs.map(s => `<option value="${escapeAttr(s)}">${escapeAttr(s)}</option>`).join('');
+    sel.value = subs.includes(prev) ? prev : subs[0];
+  }
+
+  function renderBreadcrumb() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    document.getElementById('breadcrumb').innerHTML =
+      `<span class="sem-part">🗓️ ${escapeAttr(currentSemester)}</span>
+       <span class="arrow">›</span>
+       <span class="cls-part">🏫 ${escapeAttr(cls.name)}</span>
+       <span class="arrow">›</span>
+       <span class="subj-part">📖 ${escapeAttr(subj || 'No subject')}</span>`;
+    document.getElementById('meta').textContent =
+      `${cls.rolls.length} students • ${formatDate(todayStr())}`;
+  }
+
+  function updateProgress(cls) {
+    const total = cls.rolls.length;
+    document.getElementById('progress').innerHTML = TASKS.map(t => {
+      const count = cls.rolls.filter(r => currentData[r] && currentData[r][t.id]).length;
+      const pct = total ? Math.round(count / total * 100) : 0;
+      return `<div class="prog-item">
+        <div class="prog-info">
+          <div class="prog-label">
+            <span>${t.label}</span>
+            <span class="prog-count">${count}/${total} <small>(${pct}%)</small></span>
+          </div>
+          <div class="prog-bar-outer">
+            <div class="prog-bar-inner" style="width:${pct}%"></div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function render() {
+    const cls = getClass();
+    const subj = getSubjectName();
+    const tbody = document.getElementById('studentBody');
+    renderBreadcrumb();
+
+    if (!subj) {
+      tbody.innerHTML = `<tr><td colspan="3" class="empty-cell">
+        <b>No subject selected</b>
+        Add subjects by clicking "📝 Subjects" button.
+      </td></tr>`;
+      document.getElementById('progress').innerHTML = '';
+      return;
+    }
+    if (!cls.rolls.length) {
+      tbody.innerHTML = `<tr><td colspan="3" class="empty-cell">
+        <b>No students configured</b>
+        Add roll numbers by clicking "✏️ Rolls" button.
+      </td></tr>`;
+      document.getElementById('progress').innerHTML = '';
+      return;
+    }
+
+    tbody.innerHTML = cls.rolls.map(roll => {
+      const row = currentData[roll] || {};
+      const cells = TASKS.map(t => {
+        const v = row[t.id] || '';
+        const ck = !!v;
+        return `<td data-label="${escapeAttr(t.label)}">
+          <div class="unit-cell">
+            <label class="submit-btn ${ck ? 'is-checked' : ''}"
+                   title="${ck ? 'Submitted on ' + formatDate(v) : 'Mark as submitted today'}">
+              <input type="checkbox" data-roll="${escapeAttr(roll)}"
+                     data-task="${t.id}" ${ck ? 'checked' : ''}>
+              <span class="face">${ck ? '✓' : 'Mark'}</span>
+            </label>
+            <input type="date" data-roll="${escapeAttr(roll)}"
+                   data-task="${t.id}" value="${escapeAttr(v)}"
+                   title="Submission date">
+          </div>
+        </td>`;
+      }).join('');
+      return `<tr>
+        <td class="roll" data-label="Roll No.">${escapeAttr(roll)}</td>
+        ${cells}
+      </tr>`;
+    }).join('');
+
+    updateProgress(cls);
+  }
+
+  // ============ DATA CHANGE ============
+  function handleDataChange(e) {
+    const input = e.target;
+    const roll = input.dataset.roll;
+    const task = input.dataset.task;
+    if (!roll || !task) return;
+    if (!currentData[roll]) currentData[roll] = {};
+
+    if (input.type === 'checkbox') {
+      if (input.checked) {
+        if (!currentData[roll][task]) currentData[roll][task] = todayStr();
+      } else {
+        currentData[roll][task] = '';
+      }
+    } else if (input.type === 'date') {
+      currentData[roll][task] = input.value;
+    }
+
+    render();
+    setStatus('Saving…', 'saving');
+    pendingSaves++;
+    saveSheet().finally(() => { pendingSaves--; });
+  }
+
+  document.getElementById('studentBody').addEventListener('change', handleDataChange);
+  document.getElementById('studentBody').addEventListener('input', (e) => {
+    if (e.target.type === 'date') handleDataChange(e);
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (pendingSaves > 0) {
+      e.preventDefault();
+      e.returnValue = 'Your changes are still saving. Leave anyway?';
+      return e.returnValue;
+    }
+  });
+
+  // ============ EVENTS ============
+  document.getElementById('semesterSel').addEventListener('change', async (e) => {
+    currentSemester = e.target.value;
+    localStorage.setItem('tracker_last_sem', currentSemester);
+    await loadSheetForCurrent();
+    setStatus('Semester changed', 'saved');
+  });
+
+  document.getElementById('newSemesterBtn').addEventListener('click', addSemester);
+
+  document.getElementById('classSel').addEventListener('change', () => {
+    renderSubjectOptions();
+    loadSheetForCurrent();
+    setStatus('Class changed', 'saved');
+  });
+
+  document.getElementById('subjectSel').addEventListener('change', () => {
+    loadSheetForCurrent();
+    setStatus('Subject changed', 'saved');
+  });
+
+  document.getElementById('editRollsBtn').addEventListener('click', async () => {
+    const cls = getClass();
+    const next = prompt(`Roll numbers for "${cls.name}" (comma-separated):`, cls.rolls.join(', '));
+    if (next === null) return;
+    const rolls = next.split(',').map(r => r.trim()).filter(Boolean);
+    if (!rolls.length) { showToast('No roll numbers entered', 'error'); return; }
+    cls.rolls = rolls;
+    try {
+      await db.collection('classConfig').doc(cls.id).set({
+        rolls, subjects: cls.subjects,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      render();
+      setStatus('Rolls updated', 'saved');
+      showToast(`Roll numbers updated (${rolls.length} students)`, 'success');
+    } catch (e) { showToast('Save failed: ' + e.message, 'error'); }
+  });
+
+  document.getElementById('editSubjectsBtn').addEventListener('click', async () => {
+    const cls = getClass();
+    const next = prompt(`Subjects for "${cls.name}" (comma-separated):`, (cls.subjects || []).join(', '));
+    if (next === null) return;
+    const names = next.split(',').map(s => s.trim()).filter(Boolean);
+    if (!names.length) { showToast('No subjects entered', 'error'); return; }
+    const seen = new Set(), dups = new Set();
+    names.forEach(n => { if (seen.has(n)) dups.add(n); seen.add(n); });
+    if (dups.size) { showToast('Duplicate subjects: ' + [...dups].join(', '), 'error'); return; }
+    cls.subjects = names;
+    try {
+      await db.collection('classConfig').doc(cls.id).set({
+        rolls: cls.rolls, subjects: names,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      renderSubjectOptions();
+      await loadSheetForCurrent();
+      setStatus('Subjects updated', 'saved');
+      showToast(`Subjects updated (${names.length} subjects)`, 'success');
+    } catch (e) { showToast('Save failed: ' + e.message, 'error'); }
+  });
+
+  // ============ EXPORT ============
+  const csvEscape = c => `"${String(c).replaceAll('"','""')}"`;
+  function downloadCSV(rows, filename) {
+    const csv = rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const cls = getClass(), subj = getSubjectName();
+    if (!subj) { showToast('Please select a subject first', 'warn'); return; }
+    const rows = [['Semester','Class','Subject','Roll No.', ...TASKS.map(t => t.label + ' Date')]];
+    cls.rolls.forEach(r => {
+      const row = currentData[r] || {};
+      rows.push([currentSemester, cls.name, subj, r, ...TASKS.map(t => row[t.id] || '')]);
+    });
+    const safe = s => String(s).replace(/[^a-zA-Z0-9_-]+/g, '_');
+    downloadCSV(rows, `sheet_${safe(currentSemester)}_${safe(cls.name)}_${safe(subj)}.csv`);
+    setStatus('Exported', 'saved');
+    showToast('Sheet exported to CSV', 'success');
+  });
+
+  document.getElementById('exportSemBtn').addEventListener('click', async () => {
+    showLoading(`Exporting ${currentSemester}…`);
+    try {
+      const snap = await db.collection('sheets').where('semester', '==', currentSemester).get();
+      const rows = [['Semester','Class','Subject','Roll No.', ...TASKS.map(t => t.label + ' Date')]];
+      let count = 0;
+      snap.forEach(doc => {
+        const d = doc.data();
+        const data = d.data || {};
+        const cls = classes.find(c => c.id === d.classId);
+        if (!cls) return;
+        cls.rolls.forEach(r => {
+          const row = data[r] || {};
+          if (TASKS.some(t => row[t.id])) {
+            rows.push([d.semester, d.classLabel || cls.name, d.subject, r, ...TASKS.map(t => row[t.id] || '')]);
+            count++;
+          }
+        });
+      });
+      if (!count) { showToast('No data to export', 'warn'); hideLoading(); return; }
+      downloadCSV(rows, `semester_${currentSemester.replace(/[^a-zA-Z0-9_-]/g,'_')}.csv`);
+      setStatus(`Exported ${count} rows`, 'saved');
+      showToast(`Exported ${count} rows`, 'success');
+    } catch (e) { showToast('Export failed: ' + e.message, 'error'); }
+    finally { hideLoading(); }
+  });
+
+  document.getElementById('exportAllBtn').addEventListener('click', async () => {
+    showLoading('Exporting all data…');
+    try {
+      const snap = await db.collection('sheets').get();
+      const rows = [['Semester','Class','Subject','Roll No.', ...TASKS.map(t => t.label + ' Date')]];
+      let count = 0;
+      snap.forEach(doc => {
+        const d = doc.data();
+        const data = d.data || {};
+        const cls = classes.find(c => c.id === d.classId);
+        if (!cls) return;
+        cls.rolls.forEach(r => {
+          const row = data[r] || {};
+          if (TASKS.some(t => row[t.id])) {
+            rows.push([d.semester || '?', d.classLabel || cls.name, d.subject, r, ...TASKS.map(t => row[t.id] || '')]);
+            count++;
+          }
+        });
+      });
+      if (!count) { showToast('No data to export', 'warn'); hideLoading(); return; }
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadCSV(rows, `ALL_BACKUP_${stamp}.csv`);
+      setStatus(`Exported ${count} rows`, 'saved');
+      showToast(`Full backup exported (${count} rows)`, 'success');
+    } catch (e) { showToast('Export failed: ' + e.message, 'error'); }
+    finally { hideLoading(); }
+  });
+
+  // ============ LOGOUT ============
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    if (!confirm('Sign out of your account?')) return;
+    await auth.signOut();
+  });
+
+  // ============ AUTH ============
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = user;
+      const username = user.email.replace('@cpuh.com', '');
+      document.getElementById('userName').textContent = username;
+      document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+      document.getElementById('mobileAvatar').textContent = username.charAt(0).toUpperCase();
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appContainer').style.display = '';
+      bootApp();
+    } else {
+      currentUser = null;
+      if (unsubscribeSheet) { unsubscribeSheet(); unsubscribeSheet = null; }
+      showLoginScreen();
+    }
+  });
+
+  attachLoginHandlers();
+
+  // ============ MOBILE WIRING ============
+  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+  if (mobileLogoutBtn) {
+    mobileLogoutBtn.addEventListener('click', async () => {
+      if (!confirm('Sign out of your account?')) return;
+      await auth.signOut();
+    });
+  }
+
+  const mobExportBtn = document.getElementById('mobExportBtn');
+  if (mobExportBtn) {
+    mobExportBtn.addEventListener('click', () => {
+      document.getElementById('exportBtn').click();
+    });
+  }
+  const mobRollsBtn = document.getElementById('mobRollsBtn');
+  if (mobRollsBtn) {
+    mobRollsBtn.addEventListener('click', () => {
+      document.getElementById('editRollsBtn').click();
+    });
+  }
+  const mobSubjectsBtn = document.getElementById('mobSubjectsBtn');
+  if (mobSubjectsBtn) {
+    mobSubjectsBtn.addEventListener('click', () => {
+      document.getElementById('editSubjectsBtn').click();
+    });
+  }
+
+  // Sync mobile status dot
+  const statusEl = document.getElementById('status');
+  const mobStatusDot = document.getElementById('mobStatusDot');
+  const mobStatusText = document.getElementById('mobStatusText');
+  if (statusEl && mobStatusDot) {
+    const observer = new MutationObserver(() => {
+      const cls = statusEl.className;
+      mobStatusDot.className = 'mob-status-dot' +
+        (cls.includes('saving') ? ' saving' : '') +
+        (cls.includes('error') ? ' error' : '');
+      const text = document.getElementById('statusText').textContent;
+      mobStatusText.textContent = text.length > 12 ? text.slice(0, 12) + '…' : text;
+    });
+    observer.observe(statusEl, { attributes: true, childList: true, subtree: true });
+  }
+</script>
+</body>
+</html>
